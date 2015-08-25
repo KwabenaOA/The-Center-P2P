@@ -224,6 +224,7 @@ function extrasCompare(tutor, tutee)
 function prevMatch()
 {
   var k = 0;
+  
   while(k < tutors.length)
   {
     if(tutors[k].getIsMatched().equals("Yes"))
@@ -232,12 +233,20 @@ function prevMatch()
       {
         if(tutors[k].getMatchedName().equals(tutees[j].getName()))
         {
+          var centerName = tutors[k].getName();
+          if(tutors[k].getStatus().equals("Mentor"))
+            centerName += " (M)";
+          else if(tutors[k].getStatus().equals("Tutor"))
+            centerName += " (T)";
+          else if(tutors[k].getStatus().equals("Both"))
+            centerName += " (B)";
+        
           if(tutees[j].getStatus().equals("Mentor"))
-            spreadSet.push([tutors[k].getName(),"<= Matched =>",tutees[j].getName(),"Previously","N/A","N/A",extrasCompare(tutors[k],tutees[j])]);
+            spreadSet.push([centerName,"<= Matched =>",tutees[j].getName() + " (M)","Previously","N/A","N/A",extrasCompare(tutors[k],tutees[j])]);
           else if(tutees[j].getStatus().equals("Tutor"))
-            spreadSet.push([tutors[k].getName(),"<= Matched =>",tutees[j].getName(),"Previously",subsCompare(tutors[k],tutees[j]),subsContrast(tutors[k],tutees[j]),"N/A",]);
+            spreadSet.push([centerName,"<= Matched =>",tutees[j].getName() + " (T)","Previously",subsCompare(tutors[k],tutees[j]),subsContrast(tutors[k],tutees[j]),"N/A",]);
           else if(tutees[j].getStatus().equals("Both"))
-            spreadSet.push([tutors[k].getName(),"<= Matched =>",tutees[j].getName(),"Previously",subsCompare(tutors[k],tutees[j]),subsContrast(tutors[k],tutees[j]),extrasCompare(tutors[k],tutees[j])]);
+            spreadSet.push([centerName,"<= Matched =>",tutees[j].getName() + " (B)","Previously",subsCompare(tutors[k],tutees[j]),subsContrast(tutors[k],tutees[j]),extrasCompare(tutors[k],tutees[j])]);
           tutors.splice(k,1);
           tutees.splice(j,1);
           k--;
@@ -306,74 +315,6 @@ function ranksExtraCur(tutorArray, tutee)
   }
   return percents;
 }
-//Creates an array of mentors from the "tutors" array
-function centerMentors()
-{
-  var Mentors = new Array();
-  var k = 0;
-  while(k < tutors.length)
-  {
-    if(tutors[k].getStatus().equals("Mentor"))
-    {
-      Mentors.push(tutors[k]);
-      tutors.splice(k,1);
-      k--;
-    }
-    k++;
-  }
-  return Mentors;
-}
-//Creates an array of tutors from the "tutors" array
-function centerTutors()
-{
-  var Tutors = new Array();
-  var k = 0;
-  while(k < tutors.length)
-  {
-    if(tutors[k].getStatus().equals("Tutor"))
-    {
-      Tutors.push(tutors[k]);
-      tutors.splice(k,1);
-      k--;
-    }
-    k++;
-  }
-  return Tutors;
-}
-//Creates an array of mentor-wanters from the "tutees" array
-function tuteeMentors()
-{
-  var Mentors = new Array();
-  var k = 0;
-  while(k < tutees.length)
-  {
-    if(tutees[k].getStatus().equals("Mentor"))
-    {
-      Mentors.push(tutees[k]);
-      tutees.splice(k,1);
-      k--;
-    }
-    k++;
-  }
-  return Mentors;
-}
-//Creates an array of tutor-wanters from the "tutees" array
-function tuteeTutors()
-{
-  var Tutors = new Array();
-  var k = 0;
-  while(k < tutees.length)
-  {
-    if(tutees[k].getStatus().equals("Tutor"))
-    {
-      Tutors.push(tutees[k]);
-      tutees.splice(k,1);
-      k--;
-    }
-    k++;
-  }
-  return Tutors;
-}
 //Creates an array of the arrays of indexes for the "best tutors" for each tutee
 function bestTutors(tutorArray, tuteeArray)
 {
@@ -434,135 +375,7 @@ function bestTutors(tutorArray, tuteeArray)
   return arrayOfBest;
 }
 //Matches tutees with tutors
-function matchMentors()
-{
-  var arrayOfTutees = new Array();
-  var arrayOfTutors = new Array();
-  var indexes = bestTutors(tutorsMentors,tuteesMentors);
-  while(tuteesMentors.length > 0 && tutorsMentors.length > 0)
-  {
-    for(var k = 0; k < tutorsMentors.length; k++)
-    {
-      for(var i = 0; i < indexes.length; i++)
-      {
-        for(var j = 0; j < indexes[i].length; j++)
-        {
-          if(indexes[i][j] == k)
-          {
-            arrayOfTutees.push(tuteesMentors[i]);
-            break;
-          }
-        }
-      }
-      if(arrayOfTutees.length > 0)
-      {
-        var rnd = Math.floor(Math.random()*(arrayOfTutees.length-1));
-        spreadSet.push([tutorsMentors[k].getName(),"<= Matched =>",arrayOfTutees[rnd].getName(),"Now","N/A","N/A",extrasCompare(tutorsMentors[k],arrayOfTutees[rnd])]);
-        arrayOfTutors.push(tutorsMentors[k]);
-        for(var i = 0; i < tuteesMentors.length; i++)
-        {
-          if(tuteesMentors[i].getName().equals(arrayOfTutees[rnd].getName()))
-          {
-            tuteesMentors.splice(i,1);
-            indexes.splice(i,1);
-              break;
-          }
-        }
-        for(var p = 0; p < arrayOfTutors.length; p++)
-        {
-          for(var j = 0; j < tutorsMentors.length; j++)
-          {
-            if(arrayOfTutors[p].getName().equals(tutorsMentors[j].getName()))
-            {
-              tutorsMentors.splice(j,1);
-              break;
-            }
-          }
-        }
-        arrayOfTutees = new Array();
-      }
-    }
-    if(tuteesMentors.length == 0 || tutorsMentors.length == 0)
-    {
-      break;
-    }
-    indexes = bestTutors(tutorsMentors, tuteesMentors);
-  }
-  for(var k = 0; k < tutorsMentors.length; k++)
-  {
-    tutors.push(tutorsMentors[k]);
-  }
-  for(var k = 0; k < tuteesMentors.length; k++)
-  {
-    tutees.push(tuteesMentors[k]);
-  }
-}
-//Matches tutees with tutors
-function matchTutors()
-{
-  var arrayOfTutees = new Array();
-  var arrayOfTutors = new Array();
-  var indexes = bestTutors(tutorsTutors,tuteesTutors);
-  while(tuteesTutors.length > 0 && tutorsTutors.length > 0)
-  {
-    for(var k = 0; k < tutorsTutors.length; k++)
-    {
-      for(var i = 0; i < indexes.length; i++)
-      {
-        for(var j = 0; j < indexes[i].length; j++)
-        {
-          if(indexes[i][j] == k)
-          {
-            arrayOfTutees.push(tuteesTutors[i]);
-            break;
-          }
-        }
-      }
-      if(arrayOfTutees.length > 0)
-      {
-        var rnd = Math.floor(Math.random()*(arrayOfTutees.length-1));
-        spreadSet.push([tutorsTutors[k].getName(),"<= Matched =>",arrayOfTutees[rnd].getName(),"Now",subsCompare(tutorsTutors[k],arrayOfTutees[rnd]),subsContrast(tutorsTutors[k],arrayOfTutees[rnd]),"N/A"]);
-        arrayOfTutors.push(tutorsTutors[k]);
-        for(var i = 0; i < tuteesTutors.length; i++)
-        {
-          if(tuteesTutors[i].getName().equals(arrayOfTutees[rnd].getName()))
-          {
-            tuteesTutors.splice(i,1);
-            indexes.splice(i,1);
-              break;
-          }
-        }
-        for(var p = 0; p < arrayOfTutors.length; p++)
-        {
-          for(var j = 0; j < tutorsTutors.length; j++)
-          {
-            if(arrayOfTutors[p].getName().equals(tutorsTutors[j].getName()))
-            {
-              tutorsTutors.splice(j,1);
-              break;
-            }
-          }
-        }
-        arrayOfTutees = new Array();
-      }
-    }
-    if(tuteesTutors.length == 0 || tutorsTutors.length == 0)
-    {
-      break;
-    }
-    indexes = bestTutors(tutorsTutors, tuteesTutors);
-  }
-  for(var k = 0; k < tutorsTutors.length; k++)
-  {
-    tutors.push(tutorsTutors[k]);
-  }
-  for(var k = 0; k < tuteesTutors.length; k++)
-  {
-    tutees.push(tuteesTutors[k]);
-  }
-}
-//Matches tutees with tutors
-function matchBoth()
+function match()
 {
   var arrayOfTutees = new Array();
   var arrayOfTutors = new Array();
@@ -585,7 +398,30 @@ function matchBoth()
       if(arrayOfTutees.length > 0)
       {
         var rnd = Math.floor(Math.random()*(arrayOfTutees.length-1));
-        spreadSet.push([tutors[k].getName(),"<= Matched =>",arrayOfTutees[rnd].getName(),"Now",subsCompare(tutors[k],arrayOfTutees[rnd]),subsContrast(tutors[k],arrayOfTutees[rnd]),extrasCompare(tutors[k],arrayOfTutees[rnd])]);
+        
+        var centerName = tutors[k].getName();
+        var tuteeName = arrayOfTutees[rnd].getName();
+        
+        if(tutors[k].getStatus().equals("Mentor"))
+          centerName += " (M)";
+        else if(tutors[k].getStatus().equals("Tutor"))
+          centerName += " (T)";
+        else if(tutors[k].getStatus().equals("Both"))
+          centerName += " (B)";
+        
+        if(arrayOfTutees[rnd].getStatus().equals("Mentor"))
+          tuteeName += " (M)";
+        else if(arrayOfTutees[rnd].getStatus().equals("Tutor"))
+          tuteeName += " (T)";
+        else if(arrayOfTutees[rnd].getStatus().equals("Both"))
+          tuteeName += " (B)";
+        
+        if(arrayOfTutees[rnd].getStatus().equals("Mentor"))
+          spreadSet.push([centerName,"<= Matched =>",tuteeName,"Now","N/A","N/A",extrasCompare(tutors[k],arrayOfTutees[rnd])]);
+        else if(arrayOfTutees[rnd].getStatus().equals("Tutor"))
+          spreadSet.push([centerName,"<= Matched =>",tuteeName,"Now",subsCompare(tutors[k],arrayOfTutees[rnd]),subsContrast(tutors[k],arrayOfTutees[rnd]),"N/A"]);
+        else if(arrayOfTutees[rnd].getStatus().equals("Both"))
+          spreadSet.push([centerName,"<= Matched =>",tuteeName,"Now",subsCompare(tutors[k],arrayOfTutees[rnd]),subsContrast(tutors[k],arrayOfTutees[rnd]),extrasCompare(tutors[k],arrayOfTutees[rnd])]);
         arrayOfTutors.push(tutors[k]);
         for(var i = 0; i < tutees.length; i++)
         {
@@ -616,13 +452,6 @@ function matchBoth()
     }
     indexes = bestTutors(tutors, tutees);
   }
-}
-//Matches everything
-function match()
-{
-  matchMentors();
-  matchTutors();
-  matchBoth();
 }
 function extras()
 {
@@ -728,11 +557,6 @@ function myFunction()
   getTutors();
   getTutees();
   prevMatch();
-  
-  tutorsMentors = new centerMentors();
-  tutorsTutors = new centerTutors();
-  tuteesMentors = new tuteeMentors();
-  tuteesTutors = new tuteeTutors();
   
   match();
   
