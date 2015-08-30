@@ -462,8 +462,15 @@ function extras()
     spreadSet[1].push("","Name","Mentor or Tutor","Best Subjects","Worst Subjects","Extracurriculars","","");
     for(k = 0; k < tutors.length; k++)
     {
+      var centerName = tutors[k].getName();
+      if(tutors[k].getStatus().equals("Mentor"))
+        centerName += " (M)";
+      else if(tutors[k].getStatus().equals("Tutor"))
+        centerName += " (T)";
+      else if(tutors[k].getStatus().equals("Both"))
+        centerName += " (B)";
       if(spreadSet[(k+2)].length > 0)
-        spreadSet[(k+2)].push("",tutors[k].getName(),tutors[k].getStatus(),tutors[k].getBestSubs(),tutors[k].getWorstSubs(),tutors[k].getExtraCur(),"","");
+        spreadSet[(k+2)].push("",centerName,tutors[k].getStatus(),tutors[k].getBestSubs(),tutors[k].getWorstSubs(),tutors[k].getExtraCur(),"","");
       else
       {
         spreadSet.push(["","","","","","","",""]);
@@ -477,12 +484,31 @@ function extras()
     spreadSet[1].push("","Name","Wants a Mentor or Tutor","Subjects Needing Help In","Extracurriculars","","","");
     for(k = 0; k < tutees.length; k++)
     {
+      var tuteeName = tutees[k].getName();
+      if(tutees[k].getStatus().equals("Mentor"))
+        tuteeName += " (M)";
+      else if(tutees[k].getStatus().equals("Tutor"))
+        tuteeName += " (T)";
+      else if(tutees[k].getStatus().equals("Both"))
+        tuteeName += " (B)";
       if(spreadSet[(k+2)].length > 0)
-        spreadSet[(k+2)].push("",tutees[k].getName(),tutees[k].getStatus(),tutees[k].getAllSubs(),tutees[k].getExtraCur(),"","","");
+      {
+        if(tutees[k].getStatus().equals("Mentor"))
+          spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),"N/A",tutees[k].getExtraCur(),"","","");
+        else if(tutees[k].getStatus().equals("Tutor"))
+          spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),tutees[k].getAllSubs(),"N/A","","","");
+        else if(tutees[k].getStatus().equals("Both"))
+          spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),tutees[k].getAllSubs(),tutees[k].getExtraCur(),"","","");
+      }
       else
       {
         spreadSet.push(["","","","","","","",""]);
-        spreadSet[(k+2)].push("",tutees[k].getName(),tutees[k].getStatus(),tutees[k].getAllSubs(),tutees[k].getExtraCur(),"","","");
+        if(tutees[k].getStatus().equals("Mentor"))
+          spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),"N/A",tutees[k].getExtraCur(),"","","");
+        else if(tutees[k].getStatus().equals("Tutor"))
+          spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),tutees[k].getAllSubs(),"N/A","","","");
+        else if(tutees[k].getStatus().equals("Both"))
+          spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),tutees[k].getAllSubs(),tutees[k].getExtraCur(),"","","");
       }
     }
   }
@@ -566,4 +592,7 @@ function myFunction()
   doc3.getActiveRange().setValues(spreadSet);
   
   setSpread();
+  
+  DriveApp.getFolderById("0B8Ce2qN08R_5a1lpdVZGVU10OFk").addFile(DriveApp.getFileById(doc3.getId()));
+  DriveApp.getRootFolder().removeFile(DriveApp.getFileById(doc3.getId()));
 }
