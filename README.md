@@ -1,5 +1,4 @@
 # The-Center-P2P
-//Peer to Student Matching Program for The Center at Oakton High School
 //Senior Legacy Project
 //The Center Class 2014-15
 
@@ -469,13 +468,10 @@ function extras()
         centerName += " (T)";
       else if(tutors[k].getStatus().equals("Both"))
         centerName += " (B)";
-      if(spreadSet[(k+2)].length > 0)
+      if(spreadSet.length > (k+2))
         spreadSet[(k+2)].push("",centerName,tutors[k].getStatus(),tutors[k].getBestSubs(),tutors[k].getWorstSubs(),tutors[k].getExtraCur(),"","");
       else
-      {
-        spreadSet.push(["","","","","","","",""]);
-        spreadSet[(k+2)].push("",tutors[k].getName(),tutors[k].getStatus(),tutors[k].getBestSubs(),tutors[k].getWorstSubs(),tutors[k].getExtraCur(),"","");
-      }
+        spreadSet.push(["","","","","","","","",centerName,tutors[k].getStatus(),tutors[k].getBestSubs(),tutors[k].getWorstSubs(),tutors[k].getExtraCur(),"",""]);
     }
   }
   else if(tutees.length > 0)
@@ -491,7 +487,7 @@ function extras()
         tuteeName += " (T)";
       else if(tutees[k].getStatus().equals("Both"))
         tuteeName += " (B)";
-      if(spreadSet[(k+2)].length > 0)
+      if(spreadSet.length > (k+2))
       {
         if(tutees[k].getStatus().equals("Mentor"))
           spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),"N/A",tutees[k].getExtraCur(),"","","");
@@ -502,13 +498,12 @@ function extras()
       }
       else
       {
-        spreadSet.push(["","","","","","","",""]);
         if(tutees[k].getStatus().equals("Mentor"))
-          spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),"N/A",tutees[k].getExtraCur(),"","","");
+          spreadSet.push(["","","","","","","","",tuteeName,tutees[k].getStatus(),"N/A",tutees[k].getExtraCur(),"","",""]);
         else if(tutees[k].getStatus().equals("Tutor"))
-          spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),tutees[k].getAllSubs(),"N/A","","","");
+          spreadSet.push(["","","","","","","","",tuteeName,tutees[k].getStatus(),tutees[k].getAllSubs(),"N/A","","",""]);
         else if(tutees[k].getStatus().equals("Both"))
-          spreadSet[(k+2)].push("",tuteeName,tutees[k].getStatus(),tutees[k].getAllSubs(),tutees[k].getExtraCur(),"","","");
+          spreadSet.push(["","","","","","","","",tuteeName,tutees[k].getStatus(),tutees[k].getAllSubs(),tutees[k].getExtraCur(),"","",""]);
       }
     }
   }
@@ -561,10 +556,19 @@ function setSpread()
     italics[1].push("normal","normal","normal","normal","normal","normal","normal","normal");
     
     for(p = 2; p < spreadSet.length; p++)
-    {
+    {     
+      if(alignments.length > p)
         alignments[p].push("center","center","center","center","center","center","center","center");
+      else
+        alignments.push(["center","center","center","center","center","center","center","center","center","center","center","center","center","center","center"]);
+      if(bold.length > p)
         bold[p].push("normal","normal","normal","normal","normal","normal","normal","normal");
+      else
+        bold.push(["normal","normal","normal","normal","normal","normal","normal","normal","normal","normal","normal","normal","normal","normal","normal"]);
+      if(italics.length > p)
         italics[p].push("normal","italic","normal","normal","normal","normal","normal","normal");
+      else
+        italics.push(["normal","normal","normal","normal","normal","normal","normal","normal","italic","normal","normal","normal","normal","normal","normal"]);
     }
   }
   doc3.getActiveRange().setHorizontalAlignments(alignments);
@@ -588,7 +592,7 @@ function myFunction()
   
   extras();
   
-  doc3.setActiveRange(doc3.getRange("R1C1:R" + spreadSet.length + "C15"));
+  doc3.setActiveRange(doc3.getRange("R1C1:R" + spreadSet.length + "C" + spreadSet[0].length));
   doc3.getActiveRange().setValues(spreadSet);
   
   setSpread();
